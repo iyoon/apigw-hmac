@@ -26,7 +26,7 @@ public class CreateHmacAuth {
     // API 콘솔 설정
     // -------------------------
     final String SECRET_KEY = "test"; // 비밀키
-    final List<String> FORCE_REQUEST_HEADER_LIST = List.of("Host");        // 필수 검증 헤더 : key:value 형식으로 입력
+    final List<String> FORCE_REQUEST_HEADER_LIST = List.of("Host");        // 필수 검증 헤더 : header name만 입력 
 
 
     @Test
