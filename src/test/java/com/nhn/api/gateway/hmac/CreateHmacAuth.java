@@ -26,7 +26,7 @@ public class CreateHmacAuth {
     // API 콘솔 설정
     // -------------------------
     final String SECRET_KEY = "test"; // 비밀키
-    
+
 
     @Test
     public void createSignature() throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
