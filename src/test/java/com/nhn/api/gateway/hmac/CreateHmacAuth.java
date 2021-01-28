@@ -1,7 +1,6 @@
 package com.nhn.api.gateway.hmac;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -16,6 +15,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CreateHmacAuth {
 
@@ -26,8 +26,7 @@ public class CreateHmacAuth {
     // API 콘솔 설정
     // -------------------------
     final String SECRET_KEY = "test"; // 비밀키
-    final List<String> FORCE_REQUEST_HEADER_LIST = List.of("Host");        // 필수 검증 헤더 : key:value 형식으로 입력
-
+    
 
     @Test
     public void createSignature() throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
@@ -37,9 +36,9 @@ public class CreateHmacAuth {
         // -------------------------
         HttpRequest httpRequest = HttpRequest.newBuilder()
                                              .GET()
-                                             .uri(new URI("http://kr1-rhcejfazui.dev-apigw.cloud.toast.com/set-response-header"))
-                                             .headers("header1", "header1-value")
-                                             .headers("header2", "header2-value")
+                                             .uri(new URI("http://kr1-fcxv3lsbk1.dev-apigw.cloud.toast.com/api/method"))
+                                             .headers("x-nhn-client-id", "nhn")
+                                             .headers("x-nhn-client-ip", "10.0.0.1,10.0.0.2")
                                              .build();
 
         // 시간 조정
@@ -89,14 +88,17 @@ public class CreateHmacAuth {
         messages.append(DELIMITER)
                 .append(requestDate);
 
-        if (CollectionUtils.isNotEmpty(FORCE_REQUEST_HEADER_LIST) && request.headers() != null) {
+        if (request.headers() != null) {
             messages.append(DELIMITER);
-            for (String header : FORCE_REQUEST_HEADER_LIST) {
-                messages.append(StringUtils.lowerCase(header));
+            Set<Map.Entry<String, List<String>>> headerMap = request.headers().map().entrySet();
+
+            for (Map.Entry<String, List<String>> header : headerMap) {
+                messages.append(StringUtils.lowerCase(header.getKey()));
                 messages.append(":");
-                messages.append(StringUtils.join(request.headers().allValues(header), ","));
+                messages.append(StringUtils.join(header.getValue(), ","));
                 messages.append(DELIMITER);
             }
+
             messages.deleteCharAt(messages.length() - 1);
         }
 
